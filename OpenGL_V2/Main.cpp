@@ -12,6 +12,10 @@
 #include <stdio.h>
 // Chrono (Used for time related purposes)
 #include <chrono>
+//GLM (Used for OpenGL Matrix Maths)
+#include "lib\GLM\glm\glm.hpp"
+#include "lib\GLM\glm\gtc\matrix_transform.hpp"
+#include "lib\GLM\glm\gtc\type_ptr.hpp"
 
 //Internal Includes
 #include "ShaderReader.hpp"
@@ -24,9 +28,10 @@ const int VERTEX_SHADER_COMPILE_ERROR = 1; // Vertex Shader has compiled incorre
 const int FRAGMENT_SHADER_COMPILE_ERROR = 2; // Fragment Shader has compiled incorrectly.
 
 const int fadeTime = 2000; // The time in which to change the images (in milliseconds)
+const float rotationPerSecond = 90.0f; // The rotation per Second in degrees
 
 /**VARIABLES**/
-float mixFactor = 0.0f;
+float rotation = 0.0f;
 
 /**FUNCTIONS**/
 void exitProgram(int exitCode) {
@@ -223,7 +228,7 @@ int main(int argc, char *argv[])
 	{
 		// Calculate deltaTime
 		auto t_frame = std::chrono::high_resolution_clock::now();
-		float deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_frame - t_start).count();
+		float time_since_start = std::chrono::duration_cast<std::chrono::duration<float>>(t_frame - t_start).count();
 
 		// Poll window for Events
 		if (SDL_PollEvent(&windowEvent))
@@ -247,8 +252,22 @@ int main(int argc, char *argv[])
 		glClearColor(0.6f, 0.003f, 0.922f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUniform1f(glGetUniformLocation(ref_shaderProgram, "deltaTime"), deltaTime);
+		glUniform1f(glGetUniformLocation(ref_shaderProgram, "time"), time_since_start);
 		glUniform1f(glGetUniformLocation(ref_shaderProgram, "fadeTime"), fadeTime);
+
+		rotation = rotationPerSecond * time_since_start;
+
+		while (rotation >= 360.0f)
+		{
+			rotation -= 360.0f;
+		}
+
+		printf("Rotation: %f\n", rotation);
+
+		glm::mat4 transform;
+		transform = glm::rotate(transform,  glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

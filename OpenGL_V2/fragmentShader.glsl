@@ -8,7 +8,7 @@ out vec4 outColour;
 uniform sampler2D texKitten;
 uniform sampler2D texPuppy;
 uniform float deltaTime;
-uniform float fadeTime;
+uniform float time;
 
 void main()
 {
@@ -21,7 +21,7 @@ void main()
 	}
 	else
 	{
-		vec2 reflectCoord = vec2(Texcoord.x + sin(Texcoord.y * 60.0f + deltaTime * 2.0f)/ 30.0f, 1.0f - Texcoord.y);
+		vec2 reflectCoord = vec2(Texcoord.x + sin(Texcoord.y * 60.0f + time * 2.0f)/ 30.0f, 1.0f - Texcoord.y);
 
 		colKitten = texture(texKitten, reflectCoord);
 		colPuppy = texture(texPuppy, reflectCoord);
@@ -29,7 +29,7 @@ void main()
 
 	
 
-	float mixAmount = (sin(deltaTime * (fadeTime/1000)) + 1.0f / 2.0f);
+	float mixAmount = (sin(deltaTime * (time/1000)) + 1.0f / 2.0f);
 
 	if (mixAmount > 1.0f) mixAmount = 1.0f;
 	else if (mixAmount < 0.0f) mixAmount = 0.0f;

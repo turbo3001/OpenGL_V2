@@ -70,7 +70,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\Users\luke\Documents\Visual Studio 2015\Projects\OpenGL_V2\Simple OpenGL Image Library\src;C:\Users\luke\Documents\Visual Studio 2015\Projects\OpenGL_V2\GLEW\include;C:\Users\luke\Documents\Visual Studio 2015\Projects\OpenGL_V2\SDL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\luke\Documents\visual studio 2015\Projects\OpenGL_V2\Simple OpenGL Image Library\projects\VC9\Debug;C:\Users\luke\Documents\Visual Studio 2015\Projects\OpenGL_V2\GLEW\lib\Release\Win32;C:\Users\luke\Documents\Visual Studio 2015\Projects\OpenGL_V2\SDL\lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\luke\Documents\Visual Studio 2015\Projects\OpenGL_V2\GLM;C:\Users\luke\Documents\visual studio 2015\Projects\OpenGL_V2\Simple OpenGL Image Library\projects\VC9\Debug;C:\Users\luke\Documents\Visual Studio 2015\Projects\OpenGL_V2\GLEW\lib\Release\Win32;C:\Users\luke\Documents\Visual Studio 2015\Projects\OpenGL_V2\SDL\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

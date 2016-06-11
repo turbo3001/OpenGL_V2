@@ -1,5 +1,6 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
+#include <SOIL.h>
 #include <SDL.h>
 #include <stdio.h>
 #include <chrono>
@@ -143,12 +144,11 @@ int main(int argc, char *argv[])
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		float pixels[] = {
-			0.5f, 0.5f, 0.5f,	1.0f, 1.0f, 1.0f,
-			1.0f, 1.0f, 1.0f,	0.0f, 0.0f, 0.0f
-		};
+		int width, height;
+		unsigned char* image =
+			SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 
 		glGenerateMipmap(GL_TEXTURE_2D);
 

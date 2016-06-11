@@ -247,9 +247,13 @@ int main(int argc, char *argv[])
 
 			// Handle Quit Event(s)
 			if (windowEvent.type == SDL_QUIT) exit = true;
-			if (windowEvent.type == SDL_KEYUP && windowEvent.key.keysym.sym == SDLK_ESCAPE) exit = true;
+			if (windowEvent.type == SDL_KEYUP)
+			{
+				if (windowEvent.key.keysym.sym == SDLK_ESCAPE) exit = true;
+			}
 
 			//TODO: Handle Other Window Events
+			
 
 			if (exit) {
 				break;
@@ -264,20 +268,23 @@ int main(int argc, char *argv[])
 
 		glUniform1f(glGetUniformLocation(ref_shaderProgram, "time"), time_since_start);
 		glUniform1f(glGetUniformLocation(ref_shaderProgram, "fadeTime"), fadeTime);
-
+		
 		rotation = rotationPerSecond * time_since_start;
+
+		float scaleAmount = sin(time_since_start * 5.0f) * 0.25f + 0.75f;
 
 		while (rotation >= 360.0f)
 		{
 			rotation -= 360.0f;
 		}
 
-		printf("Rotation: %f\n", rotation);
+		//printf("Rotation: %f\n", rotation);
 
-		glm::mat4 transform;
-		transform = glm::rotate(transform,  glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 model;
+		model = glm::scale(model , glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+		model = glm::rotate(model,  glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(transform));
+		glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

@@ -243,18 +243,12 @@ int main(int argc, char *argv[])
 
 		//TODO: Draw Code
 
-		// Clear the screen to black
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		// Clear the screen to cornflower blue
+		glClearColor(0.6f, 0.003f, 0.922f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		mixFactor = (sin(deltaTime * (fadeTime/1000)) + 1.0f / 2.0f);
-
-		if (mixFactor > 1.0f) mixFactor = 1.0f;
-		else if (mixFactor < 0.0f) mixFactor = 0.0f;
-
-		printf("Mix Factor: %f\n", mixFactor);
-
-		glUniform1f(glGetUniformLocation(ref_shaderProgram, "mixAmount"), mixFactor);
+		glUniform1f(glGetUniformLocation(ref_shaderProgram, "deltaTime"), deltaTime);
+		glUniform1f(glGetUniformLocation(ref_shaderProgram, "fadeTime"), fadeTime);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

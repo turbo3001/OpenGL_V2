@@ -106,9 +106,16 @@ int main(int argc, char *argv[])
 		//TODO: Draw Code
 
 		float vertices[] = {
-			0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,		// Vertex 1 (X, Y, Z) : Red
-			0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,	// Vretex 2 (X, Y, Z) : Green
-			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// Vertex 3 (X, Y, Z) : Blue
+		//	Position				Colour				Texture Co-ords
+			-0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,		// Top-left
+			0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,		// Top-right
+			0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,		// Bottom-right
+			-0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	0.0f, 1.0f		// Bottom-left
+		};
+
+		GLuint elements[] = {
+			0, 1, 2,
+			2, 3, 0
 		};
 
 		GLuint ref_vertexBufferObject;
@@ -118,20 +125,49 @@ int main(int argc, char *argv[])
 
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+		GLuint ref_elementBufferObject;
+		glGenBuffers(1, &ref_elementBufferObject);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ref_elementBufferObject);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			sizeof(elements), elements, GL_STATIC_DRAW);
+
+		GLuint ref_texture;
+		glGenTextures(1, &ref_texture);
+
+		glBindTexture(GL_TEXTURE_2D, ref_texture);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		float pixels[] = {
+			0.5f, 0.5f, 0.5f,	1.0f, 1.0f, 1.0f,
+			1.0f, 1.0f, 1.0f,	0.0f, 0.0f, 0.0f
+		};
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+
 		GLint posAttrib = glGetAttribLocation(ref_shaderProgram, "position");
 		glEnableVertexAttribArray(posAttrib);
 		glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE,
-								6*sizeof(float), 0);
+								8*sizeof(float), 0);
 
 		GLint colAttrib = glGetAttribLocation(ref_shaderProgram, "colour");
 		glEnableVertexAttribArray(colAttrib);
 		glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
-								6 * sizeof(float), (void*)(3 * sizeof(float)));
+								8 * sizeof(float), (void*)(3 * sizeof(float)));
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		GLint texAttrib = glGetAttribLocation(ref_shaderProgram, "texcoord");
+		glEnableVertexAttribArray(texAttrib);
+		glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
+								8 * sizeof(float), (void*)(6 * sizeof(float)));
 
-		GLint uniColour = glGetUniformLocation(ref_shaderProgram, "triangleColour");
-		glUniform3f(uniColour, (sin(deltaTime * 4.0f) + 1.0f) / 2.0f, (sin(deltaTime * 2.0f) + 1.0f) / 2.0f, (sin(deltaTime * 8.0f) + 1.0f) / 2.0f);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		SDL_GL_SwapWindow(window);
 

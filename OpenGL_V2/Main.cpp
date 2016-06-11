@@ -23,6 +23,11 @@ const int NORMAL_EXIT = 0; // Regular Exit from the Program
 const int VERTEX_SHADER_COMPILE_ERROR = 1; // Vertex Shader has compiled incorrectly.
 const int FRAGMENT_SHADER_COMPILE_ERROR = 2; // Fragment Shader has compiled incorrectly.
 
+const int fadeTime = 2000; // The time in which to change the images (in milliseconds)
+
+/**VARIABLES**/
+float mixFactor = 0.0f;
+
 /**FUNCTIONS**/
 void exitProgram(int exitCode) {
 	//TODO: Clean Up used contexts etc.
@@ -237,6 +242,19 @@ int main(int argc, char *argv[])
 		}
 
 		//TODO: Draw Code
+
+		// Clear the screen to black
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		mixFactor = (sin(deltaTime * (fadeTime/1000)) + 1.0f / 2.0f);
+
+		if (mixFactor > 1.0f) mixFactor = 1.0f;
+		else if (mixFactor < 0.0f) mixFactor = 0.0f;
+
+		printf("Mix Factor: %f\n", mixFactor);
+
+		glUniform1f(glGetUniformLocation(ref_shaderProgram, "mixAmount"), mixFactor);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

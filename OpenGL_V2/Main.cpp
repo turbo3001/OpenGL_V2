@@ -28,7 +28,7 @@ const int VERTEX_SHADER_COMPILE_ERROR = 1; // Vertex Shader has compiled incorre
 const int FRAGMENT_SHADER_COMPILE_ERROR = 2; // Fragment Shader has compiled incorrectly.
 
 const int fadeTime = 2000; // The time in which to change the images (in milliseconds)
-const float rotationPerSecond = 90.0f; // The rotation per Second in degrees
+const float rotationPerSecond = 10.0f; // The rotation per Second in degrees
 
 /**VARIABLES**/
 float rotation = 0.0f;
@@ -223,6 +223,16 @@ int main(int argc, char *argv[])
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+	glm::mat4 view = glm::lookAt(
+			glm::vec3(1.2f, 1.2f, 1.2f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f)
+		);
+	glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
+	glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
 	// Program Loop
 	while (ExitCode == 0) 
 	{
@@ -267,7 +277,7 @@ int main(int argc, char *argv[])
 		glm::mat4 transform;
 		transform = glm::rotate(transform,  glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
+		glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(transform));
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

@@ -2,12 +2,13 @@
 
 
 /**CONSTANTS**/
-const int fadeTime = 2000; // The time in which to change the images (in milliseconds)
+const float fadeTime = 2000.0f; // The time in which to change the images (in milliseconds)
 const float rotationPerSecond = 45.0f; // The rotation per Second in degrees
 
 OpenGL::OpenGL()
 {
 	m_shaderProgram = GLShaderProgram();
+	m_camera = Camera();
 }
 
 OpenGL::~OpenGL()
@@ -25,13 +26,25 @@ void OpenGL::init()
 
 	m_shaderProgram.init();
 
+	// Set up camera
+	// View Matrix Variables
+	m_camera.setPosition(2.5f, 2.5f, 2.0f);
+	m_camera.setLookAt(0.0f, 0.0f, 0.0f);
+	m_camera.setUp(0.0f, 0.0f, 1.0f);
+
+	// Perspective Matrix Variables
+	m_camera.setFOV(45.0f);
+	m_camera.setAspectRatio(800.0f / 600.0f);
+	m_camera.setNearPlane(1.0f);
+	m_camera.setFarPlane(10.0f);
+
 	// Create Verticies
 	float vertices[] = {
 		//	Position				Colour				Texture Co-ords
 		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,		1.0f, 1.0f,	1.0f,	1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,		1.0f, 1.0f,	1.0f,	1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,		1.0f, 1.0f,	1.0f,	1.0f, 1.0f,
 		-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
 		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
 
@@ -57,23 +70,23 @@ void OpenGL::init()
 		0.5f,  0.5f,  0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
 
 		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
-		0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
 		-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
 		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
 
 		-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
 		-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
 		-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
 
 		-1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
-		1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
-		1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
-		1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		1.0f, -1.0f, -0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		1.0f,  1.0f, -0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		1.0f,  1.0f, -0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
 		-1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
 		-1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f
 	};
@@ -159,25 +172,30 @@ void OpenGL::init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glm::mat4 view = glm::lookAt(
-		glm::vec3(2.5f, 2.5f, 2.0f),
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f)
-		);
-	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "view"), 1, GL_FALSE, glm::value_ptr(view));
-
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
-	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	
+	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "view"), 1, GL_FALSE, glm::value_ptr(m_camera.getViewMatrix()));
+	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "projection"), 1, GL_FALSE, glm::value_ptr(m_camera.getProjetcionMatrix()));
 
 	glEnable(GL_DEPTH_TEST);
 }
 
 void OpenGL::update(UpdateObject updateObject)
 {
+
 	glUniform1f(glGetUniformLocation(m_shaderProgram.getReference(), "time"), updateObject.getTimeSinceStart());
 	glUniform1f(glGetUniformLocation(m_shaderProgram.getReference(), "fadeTime"), fadeTime);
+
+	float newX = sin(updateObject.getTimeSinceStart() * 1.25f) * 2.25f + 0.75f;
+	float newY = sin(updateObject.getTimeSinceStart() * 0.625f) * 2.25f + 0.75f;
+	float newZ = sin(updateObject.getTimeSinceStart() * 0.25f) * 2.25f + 2.25f;
+
+	m_camera.setPosition(newX, newY, newZ);
+	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "view"), 1, GL_FALSE, glm::value_ptr(m_camera.getViewMatrix()));
+	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "projection"), 1, GL_FALSE, glm::value_ptr(m_camera.getProjetcionMatrix()));
 	
-	scaleAmount = sin(updateObject.getTimeSinceStart() * 5.0f) * 0.25f + 0.75f;
+	scaleAmount = 1.0f;
+
+	//scaleAmount = sin(updateObject.getTimeSinceStart() * 5.0f) * 0.25f + 0.75f;
 	
 	rotation = rotationPerSecond * updateObject.getTimeSinceStart();
 

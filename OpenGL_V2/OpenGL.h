@@ -7,6 +7,7 @@
 #include "Maths.h"
 #include "OpenGLDependancies.h"
 #include "GLShaderProgram.h"
+#include "Camera.h"
 #include "ShaderReader.hpp"
 #include "UpdateObject.h"
 
@@ -27,10 +28,6 @@ private:
 	/**OPENGL VARIABLES**/
 	GLShaderProgram m_shaderProgram;
 
-	GLuint ref_vertexShader;
-	GLuint ref_fragmentShader;
-	GLuint ref_shaderProgram;
-
 	GLuint ref_vertexArrayObject;
 	GLuint ref_vertexBufferObject;
 	GLuint ref_elementBufferObject;
@@ -38,6 +35,8 @@ private:
 	GLuint ref_textures[2];
 
 	/**VARIABLES**/
+	Camera m_camera;
+
 	float rotation;
 	float scaleAmount;
 };

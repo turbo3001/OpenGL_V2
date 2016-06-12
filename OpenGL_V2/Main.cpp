@@ -17,12 +17,9 @@
 /**GLOBALS**/
 
 /**CONSTANTS**/
-const int fadeTime = 2000; // The time in which to change the images (in milliseconds)
-const float rotationPerSecond = 45.0f; // The rotation per Second in degrees
 
 /**VARIABLES**/
 App myApp;
-float rotation = 0.0f;
 
 /**FUNCTIONS**/
 static void exitProgram(int exitCode) {

@@ -118,11 +118,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Context.cpp" />
     <ClCompile Include="FragmentShader.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="GLShaderProgram.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Maths.cpp" />
     <ClCompile Include="OpenGL.cpp" />
     <ClCompile Include="ShaderReader.cpp" />
     <ClCompile Include="UpdateObject.cpp" />
@@ -134,9 +136,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Context.h" />
     <ClInclude Include="FragmentShader.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="GLShaderProgram.h" />
     <ClInclude Include="IOpenGLObject.h" />

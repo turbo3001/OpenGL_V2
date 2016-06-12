@@ -1,5 +1,7 @@
 #version 150
 
+// Vertex Shader
+
 in vec3 position;
 in vec3 colour;
 in vec2 texcoord;
@@ -11,9 +13,11 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform vec3 overrideColour;
+
 void main()
 {
 	Texcoord = texcoord;
-	Colour = colour;
+	Colour = overrideColour * colour;
     gl_Position = projection * view * model * vec4(position, 1.0);
 }

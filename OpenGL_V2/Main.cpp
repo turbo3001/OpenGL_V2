@@ -172,7 +172,14 @@ int main(int argc, char *argv[])
 		 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
 		 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
 		-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f
+		-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
+
+		-1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		 1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		 1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		 1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		-1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		-1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f
 	};
 
 	// Create Element Array (Index Array)
@@ -261,7 +268,7 @@ int main(int argc, char *argv[])
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glm::mat4 view = glm::lookAt(
-			glm::vec3(1.2f, 1.2f, 1.2f),
+			glm::vec3(2.5f, 2.5f, 2.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 0.0f, 1.0f)
 		);
@@ -323,10 +330,45 @@ int main(int argc, char *argv[])
 		model = glm::scale(model , glm::vec3(scaleAmount, scaleAmount, scaleAmount));
 		model = glm::rotate(model,  glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		GLuint ref_modelLocation = glGetUniformLocation(ref_shaderProgram, "model");
+		glUniformMatrix4fv(ref_modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
+		// Draw Cube
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		glEnable(GL_STENCIL_TEST);
+			
+			// Draw Floor
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			glStencilMask(0xFF);
+			glDepthMask(GL_FALSE);
+			glClear(GL_STENCIL_BUFFER_BIT);
+
+			glDrawArrays(GL_TRIANGLES, 36, 6);
+
+
+			// Draw Cube Reflection
+			glStencilFunc(GL_EQUAL, 1, 0xFF);
+			glStencilMask(0x00);
+			glDepthMask(GL_TRUE);
+
+			model = glm::scale(
+				glm::translate(model, glm::vec3(0, 0, -1)),
+				glm::vec3(1, 1, -1)
+				);
+			glUniformMatrix4fv(ref_modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
+			GLuint ref_overrideColour = glGetUniformLocation(ref_shaderProgram, "overrideColour");
+			GLuint ref_reflection = glGetUniformLocation(ref_shaderProgram, "reflection");
+
+			glUniform1i(ref_reflection, 1);
+			glUniform3f(ref_overrideColour, 0.3f, 0.3f, 0.3f);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glUniform3f(ref_overrideColour, 1.0f, 1.0f, 1.0f);
+			glUniform1i(ref_reflection, 0);
+
+		glDisable(GL_STENCIL_TEST);
 		SDL_GL_SwapWindow(window);
 
 	}

@@ -1,80 +1,35 @@
-/**INCLUDES**/
-
-// External Includes
-// SDL (Used for Window and Context)
-#include <SDL.h>
-// Standard Input and Output (Used to write to Console)
-#include <stdio.h>
-// Chrono (Used for time related purposes)
-#include <chrono>
-
-//Internal Includes
-#include "App.h"
-#include "ShaderReader.hpp"
 #include "OpenGL.h"
-#include "Maths.h"
 
-/**GLOBALS**/
 
 /**CONSTANTS**/
 const int fadeTime = 2000; // The time in which to change the images (in milliseconds)
 const float rotationPerSecond = 45.0f; // The rotation per Second in degrees
 
-/**VARIABLES**/
-App myApp;
-float rotation = 0.0f;
-
-/**FUNCTIONS**/
-static void exitProgram(int exitCode) {
-	//TODO: Clean Up used contexts etc.
-	exit(exitCode);
+OpenGL::OpenGL()
+{
 }
 
-int main(int argc, char *argv[])
+OpenGL::~OpenGL()
 {
-	myApp = App();
-	myApp.start();
-	
-	/*
-	// Get program start time (used for deltaTime Calculations)
-	auto t_start = std::chrono::high_resolution_clock::now();
+}
 
-	// Set Up Exit Code (Used for debugging)
-	ExitCode = NORMAL_EXIT;	//See Constants for possible Errors.
-
-	// Inialise SDL Window and Context
-	SDL_Init(SDL_INIT_VIDEO); //Initialise SDL
-
-	// Tell SDL we want a OpenGL context.
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-
-	// Create the window
-	SDL_Window* window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
-
-	// Create the context
-	SDL_GLContext context = SDL_GL_CreateContext(window);
-	
-	// Create SDL_Event object, this will listen for window events later.
-	SDL_Event windowEvent;
-
+void OpenGL::init()
+{
 	// Initialise GLEW (NOTE: This has to be done after Window and Context created!) 
 	glewExperimental = GL_TRUE;
 	glewInit();
 
 	// Initialse Shaders
 	// Vertex Shader
-	
+
 	// Read Shader from File
-	std::string vertexSourceStr = readShader("vertexShader.glsl");	
+	std::string vertexSourceStr = readShader("vertexShader.glsl");
 	const char *vertexSource = vertexSourceStr.c_str(); // openGL requires the source to be on char[] rather than std::String
 
-	GLuint ref_vertexShader = glCreateShader(GL_VERTEX_SHADER); // Get a reference to a Vertex Shader
-	
-	// Load char[] into and compile shader.
-	glShaderSource(ref_vertexShader, 1, &vertexSource, NULL); 
+	ref_vertexShader = glCreateShader(GL_VERTEX_SHADER); // Get a reference to a Vertex Shader
+
+																// Load char[] into and compile shader.
+	glShaderSource(ref_vertexShader, 1, &vertexSource, NULL);
 	glCompileShader(ref_vertexShader);
 
 	// Handle any shader compile errors
@@ -85,7 +40,8 @@ int main(int argc, char *argv[])
 		char buffer[512];
 		glGetShaderInfoLog(ref_vertexShader, 512, NULL, buffer);
 		printf("An Error occurred when compiling vertex shader: %s", buffer);
-		exitProgram(VERTEX_SHADER_COMPILE_ERROR);
+		ExitCode = VERTEX_SHADER_COMPILE_ERROR;
+		return;
 	}
 
 	// Fragment/Pixel Shader
@@ -94,9 +50,9 @@ int main(int argc, char *argv[])
 	std::string fragmentSourceStr = readShader("fragmentShader.glsl");
 	const char *fragmentSource = fragmentSourceStr.c_str();
 
-	GLuint ref_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); // Get a reference to a Fragment Shader
+	ref_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); // Get a reference to a Fragment Shader
 
-	//Load char[] into and compile shader.
+																	//Load char[] into and compile shader.
 	glShaderSource(ref_fragmentShader, 1, &fragmentSource, NULL);
 	glCompileShader(ref_fragmentShader);
 
@@ -107,12 +63,12 @@ int main(int argc, char *argv[])
 		char buffer[512];
 		glGetShaderInfoLog(ref_fragmentShader, 512, NULL, buffer);
 		printf("An Error occurred when compiling fragment shader: %s", buffer);
-		exitProgram(FRAGMENT_SHADER_COMPILE_ERROR);
-		
+		ExitCode = FRAGMENT_SHADER_COMPILE_ERROR;
+		return;
 	}
 
 	// Compile Shader Program
-	GLuint ref_shaderProgram = glCreateProgram();
+	ref_shaderProgram = glCreateProgram();
 	glAttachShader(ref_shaderProgram, ref_vertexShader);
 	glAttachShader(ref_shaderProgram, ref_fragmentShader);
 
@@ -125,18 +81,18 @@ int main(int argc, char *argv[])
 
 	// Create Verticies
 	float vertices[] = {
-	//	Position				Colour				Texture Co-ords
+		//	Position				Colour				Texture Co-ords
 		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,	1.0f, 1.0f,	1.0f,	1.0f, 1.0f,
 		-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
 		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
 
 		-0.5f, -0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
-		 0.5f, -0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
-		 0.5f,  0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
-		 0.5f,  0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
+		0.5f, -0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f,  0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
+		0.5f,  0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
 		-0.5f,  0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
 		-0.5f, -0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
 
@@ -155,23 +111,23 @@ int main(int argc, char *argv[])
 		0.5f,  0.5f,  0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
 
 		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
 		-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
 		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
 
 		-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,
 		-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 0.0f,
 		-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f,
 
 		-1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
-		 1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
-		 1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
-		 1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
 		-1.0f,  1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
 		-1.0f, -1.0f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f
 	};
@@ -183,12 +139,10 @@ int main(int argc, char *argv[])
 	};
 
 	// Create a reference to the Vertex Array.
-	GLuint ref_vertexArrayObject;
 	glGenVertexArrays(1, &ref_vertexArrayObject);
 	glBindVertexArray(ref_vertexArrayObject);
 
 	// Create a reference to the Vertex Buffer
-	GLuint ref_vertexBufferObject;
 	glGenBuffers(1, &ref_vertexBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, ref_vertexBufferObject);
 
@@ -196,7 +150,6 @@ int main(int argc, char *argv[])
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	// Create a reference to the Element Buffer (Index Buffer)
-	GLuint ref_elementBufferObject;
 	glGenBuffers(1, &ref_elementBufferObject);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ref_elementBufferObject);
 
@@ -223,7 +176,6 @@ int main(int argc, char *argv[])
 
 	// Initialise Texture(s)
 	// Create a Reference to Texture(s)
-	GLuint ref_textures[2];
 	glGenTextures(2, ref_textures);
 
 	int width, height;
@@ -232,13 +184,13 @@ int main(int argc, char *argv[])
 	// You can have multiple textures loaded into GRAM glActiveTexture switches between them.
 	glActiveTexture(GL_TEXTURE0); // Set Texture 0
 	glBindTexture(GL_TEXTURE_2D, ref_textures[0]);
-		//Load Texture Image
-		image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB); // Load picture using SOIL
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image); // Load into GRAM
-		SOIL_free_image_data(image); // Once it's been loaded into GRAM it's no longer needed in RAM
+	//Load Texture Image
+	image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB); // Load picture using SOIL
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image); // Load into GRAM
+	SOIL_free_image_data(image); // Once it's been loaded into GRAM it's no longer needed in RAM
 	glUniform1i(glGetUniformLocation(ref_shaderProgram, "texKitten"), 0); // Let OpenGL know which shader variable to set it to.
 
-	// Set Wrapping Options.
+																		  // Set Wrapping Options.
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -249,10 +201,10 @@ int main(int argc, char *argv[])
 
 	// Set Texture 1
 	glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, ref_textures[1]);
-		image = SOIL_load_image("sample2.png", &width, &height, 0, SOIL_LOAD_RGB);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-		SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, ref_textures[1]);
+	image = SOIL_load_image("sample2.png", &width, &height, 0, SOIL_LOAD_RGB);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	SOIL_free_image_data(image);
 	glUniform1i(glGetUniformLocation(ref_shaderProgram, "texPuppy"), 1);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -262,9 +214,9 @@ int main(int argc, char *argv[])
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glm::mat4 view = glm::lookAt(
-			glm::vec3(2.5f, 2.5f, 2.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f)
+		glm::vec3(2.5f, 2.5f, 2.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
 		);
 	glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
@@ -272,101 +224,76 @@ int main(int argc, char *argv[])
 	glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 	glEnable(GL_DEPTH_TEST);
+}
 
-	// Program Loop
-	while (ExitCode == 0) 
-	{
-		// Calculate deltaTime
-		auto t_frame = std::chrono::high_resolution_clock::now();
-		float time_since_start = std::chrono::duration_cast<std::chrono::duration<float>>(t_frame - t_start).count();
-
-		// Poll window for Events
-		if (SDL_PollEvent(&windowEvent))
-		{
-			bool exit = false;
-
-			// Handle Quit Event(s)
-			if (windowEvent.type == SDL_QUIT) exit = true;
-			if (windowEvent.type == SDL_KEYUP)
-			{
-				if (windowEvent.key.keysym.sym == SDLK_ESCAPE) exit = true;
-			}
-
-			//TODO: Handle Other Window Events
-			
-
-			if (exit) {
-				break;
-			}
-		}
-
-		//TODO: Draw Code
-
-		// Clear the screen to cornflower blue
-		glClearColor(0.6f, 0.003f, 0.922f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUniform1f(glGetUniformLocation(ref_shaderProgram, "time"), time_since_start);
-		glUniform1f(glGetUniformLocation(ref_shaderProgram, "fadeTime"), fadeTime);
-		
-		rotation = rotationPerSecond * time_since_start;
-
-		float scaleAmount = sin(time_since_start * 5.0f) * 0.25f + 0.75f;
-
-		while (rotation >= 360.0f)
-		{
-			rotation -= 360.0f;
-		}
-
-		//printf("Rotation: %f\n", rotation);
-
-		glm::mat4 model;
-		model = glm::scale(model , glm::vec3(scaleAmount, scaleAmount, scaleAmount));
-		model = glm::rotate(model,  glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		GLuint ref_modelLocation = glGetUniformLocation(ref_shaderProgram, "model");
-		glUniformMatrix4fv(ref_modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-
-		// Draw Cube
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glEnable(GL_STENCIL_TEST);
-			
-			// Draw Floor
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-			glStencilMask(0xFF);
-			glDepthMask(GL_FALSE);
-			glClear(GL_STENCIL_BUFFER_BIT);
-
-			glDrawArrays(GL_TRIANGLES, 36, 6);
-
-
-			// Draw Cube Reflection
-			glStencilFunc(GL_EQUAL, 1, 0xFF);
-			glStencilMask(0x00);
-			glDepthMask(GL_TRUE);
-
-			model = glm::scale(
-				glm::translate(model, glm::vec3(0, 0, -1)),
-				glm::vec3(1, 1, -1)
-				);
-			glUniformMatrix4fv(ref_modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-
-			GLuint ref_overrideColour = glGetUniformLocation(ref_shaderProgram, "overrideColour");
-			GLuint ref_reflection = glGetUniformLocation(ref_shaderProgram, "reflection");
-
-			glUniform1i(ref_reflection, 1);
-			glUniform3f(ref_overrideColour, 0.3f, 0.3f, 0.3f);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			glUniform3f(ref_overrideColour, 1.0f, 1.0f, 1.0f);
-			glUniform1i(ref_reflection, 0);
-
-		glDisable(GL_STENCIL_TEST);
-		SDL_GL_SwapWindow(window);
-
-	}
+void OpenGL::update(UpdateObject updateObject)
+{
+	glUniform1f(glGetUniformLocation(ref_shaderProgram, "time"), updateObject.getTimeSinceStart());
+	glUniform1f(glGetUniformLocation(ref_shaderProgram, "fadeTime"), fadeTime);
 	
+	scaleAmount = sin(updateObject.getTimeSinceStart() * 5.0f) * 0.25f + 0.75f;
+	
+	rotation = rotationPerSecond * updateObject.getTimeSinceStart();
+
+	while (rotation >= 360.0f)
+	{
+		rotation -= 360.0f;
+	}
+}
+
+void OpenGL::draw()
+{
+	glClearColor(0.6f, 0.003f, 0.922f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glm::mat4 model;
+	model = glm::scale(model, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+	model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	GLuint ref_modelLocation = glGetUniformLocation(ref_shaderProgram, "model");
+	glUniformMatrix4fv(ref_modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
+	// Draw Cube
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	glEnable(GL_STENCIL_TEST);
+
+	// Draw Floor
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilMask(0xFF);
+	glDepthMask(GL_FALSE);
+	glClear(GL_STENCIL_BUFFER_BIT);
+
+	glDrawArrays(GL_TRIANGLES, 36, 6);
+
+
+	// Draw Cube Reflection
+	glStencilFunc(GL_EQUAL, 1, 0xFF);
+	glStencilMask(0x00);
+	glDepthMask(GL_TRUE);
+
+	model = glm::scale(
+		glm::translate(model, glm::vec3(0, 0, -1)),
+		glm::vec3(1, 1, -1)
+		);
+	glUniformMatrix4fv(ref_modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
+	GLuint ref_overrideColour = glGetUniformLocation(ref_shaderProgram, "overrideColour");
+	GLuint ref_reflection = glGetUniformLocation(ref_shaderProgram, "reflection");
+
+	glUniform1i(ref_reflection, 1);
+	glUniform3f(ref_overrideColour, 0.3f, 0.3f, 0.3f);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glUniform3f(ref_overrideColour, 1.0f, 1.0f, 1.0f);
+	glUniform1i(ref_reflection, 0);
+
+	glDisable(GL_STENCIL_TEST);
+}
+
+void OpenGL::cleanUp()
+{
+
 	// Delete Texture References
 	glDeleteTextures(2, ref_textures);
 
@@ -382,14 +309,4 @@ int main(int argc, char *argv[])
 
 	// Delete Vertex Array
 	glDeleteVertexArrays(1, &ref_vertexArrayObject);
-	
-	//Clean Context
-	SDL_GL_DeleteContext(context);
-	
-	// Close SDL Window
-	SDL_Quit();*/
-
-	exitProgram(ExitCode);
-	
-	return MAIN_RETURN;
 }

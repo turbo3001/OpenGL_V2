@@ -1,10 +1,10 @@
 #pragma once
-#include "OpenGL.h"
+#include "OpenGLDependancies.h"
 
 class IOpenGLObject
 {
 	public:
-		virtual ~IOpenGLObject() {}
+		virtual ~IOpenGLObject() {};
 
 		virtual GLuint getReference() = 0;
 

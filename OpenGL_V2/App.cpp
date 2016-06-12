@@ -40,7 +40,10 @@ void App::startLoop()
 {
 	float previousTime = std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count();
 
-	ExitCode = PROGRAM_RUNNING;
+	if (ExitCode == PROGRAM_START)
+	{
+		ExitCode = PROGRAM_RUNNING;
+	}
 
 	while (ExitCode == PROGRAM_RUNNING)
 	{

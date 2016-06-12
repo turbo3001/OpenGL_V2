@@ -7,6 +7,7 @@ const float rotationPerSecond = 45.0f; // The rotation per Second in degrees
 
 OpenGL::OpenGL()
 {
+	m_shaderProgram = GLShaderProgram();
 }
 
 OpenGL::~OpenGL()
@@ -22,62 +23,7 @@ void OpenGL::init()
 	// Initialse Shaders
 	// Vertex Shader
 
-	// Read Shader from File
-	std::string vertexSourceStr = readShader("vertexShader.glsl");
-	const char *vertexSource = vertexSourceStr.c_str(); // openGL requires the source to be on char[] rather than std::String
-
-	ref_vertexShader = glCreateShader(GL_VERTEX_SHADER); // Get a reference to a Vertex Shader
-
-																// Load char[] into and compile shader.
-	glShaderSource(ref_vertexShader, 1, &vertexSource, NULL);
-	glCompileShader(ref_vertexShader);
-
-	// Handle any shader compile errors
-	GLint shaderCompileStatus;
-	glGetShaderiv(ref_vertexShader, GL_COMPILE_STATUS, &shaderCompileStatus);
-	if (shaderCompileStatus != GL_TRUE)
-	{
-		char buffer[512];
-		glGetShaderInfoLog(ref_vertexShader, 512, NULL, buffer);
-		printf("An Error occurred when compiling vertex shader: %s", buffer);
-		ExitCode = VERTEX_SHADER_COMPILE_ERROR;
-		return;
-	}
-
-	// Fragment/Pixel Shader
-
-	//Reader Shader from File
-	std::string fragmentSourceStr = readShader("fragmentShader.glsl");
-	const char *fragmentSource = fragmentSourceStr.c_str();
-
-	ref_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); // Get a reference to a Fragment Shader
-
-																	//Load char[] into and compile shader.
-	glShaderSource(ref_fragmentShader, 1, &fragmentSource, NULL);
-	glCompileShader(ref_fragmentShader);
-
-	// Handle any Shader errors (using previous shaderCompileStatus as if we're here 
-	glGetShaderiv(ref_fragmentShader, GL_COMPILE_STATUS, &shaderCompileStatus);
-	if (shaderCompileStatus != GL_TRUE)
-	{
-		char buffer[512];
-		glGetShaderInfoLog(ref_fragmentShader, 512, NULL, buffer);
-		printf("An Error occurred when compiling fragment shader: %s", buffer);
-		ExitCode = FRAGMENT_SHADER_COMPILE_ERROR;
-		return;
-	}
-
-	// Compile Shader Program
-	ref_shaderProgram = glCreateProgram();
-	glAttachShader(ref_shaderProgram, ref_vertexShader);
-	glAttachShader(ref_shaderProgram, ref_fragmentShader);
-
-	// Let Fragment Shader know where to output
-	glBindFragDataLocation(ref_shaderProgram, 0, "outColour");
-
-	// Tell OpenGL which program to use.
-	glLinkProgram(ref_shaderProgram);
-	glUseProgram(ref_shaderProgram);
+	m_shaderProgram.init();
 
 	// Create Verticies
 	float vertices[] = {
@@ -159,17 +105,17 @@ void OpenGL::init()
 
 	// Let OpenGL know how our shader should handle the incoming Vertex data.
 	// Position
-	GLint posAttrib = glGetAttribLocation(ref_shaderProgram, "position");
+	GLint posAttrib = glGetAttribLocation(m_shaderProgram.getReference(), "position");
 	glEnableVertexAttribArray(posAttrib);
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE,
 		8 * sizeof(GLfloat), 0);
 	// Colour
-	GLint colAttrib = glGetAttribLocation(ref_shaderProgram, "colour");
+	GLint colAttrib = glGetAttribLocation(m_shaderProgram.getReference(), "colour");
 	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
 		8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 	// Texture Co-ordinate
-	GLint texAttrib = glGetAttribLocation(ref_shaderProgram, "texcoord");
+	GLint texAttrib = glGetAttribLocation(m_shaderProgram.getReference(), "texcoord");
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
 		8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
@@ -188,7 +134,7 @@ void OpenGL::init()
 	image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB); // Load picture using SOIL
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image); // Load into GRAM
 	SOIL_free_image_data(image); // Once it's been loaded into GRAM it's no longer needed in RAM
-	glUniform1i(glGetUniformLocation(ref_shaderProgram, "texKitten"), 0); // Let OpenGL know which shader variable to set it to.
+	glUniform1i(glGetUniformLocation(m_shaderProgram.getReference(), "texKitten"), 0); // Let OpenGL know which shader variable to set it to.
 
 																		  // Set Wrapping Options.
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -205,7 +151,7 @@ void OpenGL::init()
 	image = SOIL_load_image("sample2.png", &width, &height, 0, SOIL_LOAD_RGB);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	SOIL_free_image_data(image);
-	glUniform1i(glGetUniformLocation(ref_shaderProgram, "texPuppy"), 1);
+	glUniform1i(glGetUniformLocation(m_shaderProgram.getReference(), "texPuppy"), 1);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -218,18 +164,18 @@ void OpenGL::init()
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 0.0f, 1.0f)
 		);
-	glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
-	glUniformMatrix4fv(glGetUniformLocation(ref_shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 	glEnable(GL_DEPTH_TEST);
 }
 
 void OpenGL::update(UpdateObject updateObject)
 {
-	glUniform1f(glGetUniformLocation(ref_shaderProgram, "time"), updateObject.getTimeSinceStart());
-	glUniform1f(glGetUniformLocation(ref_shaderProgram, "fadeTime"), fadeTime);
+	glUniform1f(glGetUniformLocation(m_shaderProgram.getReference(), "time"), updateObject.getTimeSinceStart());
+	glUniform1f(glGetUniformLocation(m_shaderProgram.getReference(), "fadeTime"), fadeTime);
 	
 	scaleAmount = sin(updateObject.getTimeSinceStart() * 5.0f) * 0.25f + 0.75f;
 	
@@ -250,7 +196,7 @@ void OpenGL::draw()
 	model = glm::scale(model, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
 	model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 
-	GLuint ref_modelLocation = glGetUniformLocation(ref_shaderProgram, "model");
+	GLuint ref_modelLocation = glGetUniformLocation(m_shaderProgram.getReference(), "model");
 	glUniformMatrix4fv(ref_modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
 	// Draw Cube
@@ -279,8 +225,8 @@ void OpenGL::draw()
 		);
 	glUniformMatrix4fv(ref_modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
-	GLuint ref_overrideColour = glGetUniformLocation(ref_shaderProgram, "overrideColour");
-	GLuint ref_reflection = glGetUniformLocation(ref_shaderProgram, "reflection");
+	GLuint ref_overrideColour = glGetUniformLocation(m_shaderProgram.getReference(), "overrideColour");
+	GLuint ref_reflection = glGetUniformLocation(m_shaderProgram.getReference(), "reflection");
 
 	glUniform1i(ref_reflection, 1);
 	glUniform3f(ref_overrideColour, 0.3f, 0.3f, 0.3f);
@@ -297,11 +243,7 @@ void OpenGL::cleanUp()
 	// Delete Texture References
 	glDeleteTextures(2, ref_textures);
 
-	//Delete Shader Program
-	glDeleteProgram(ref_shaderProgram);
-	//Delete Fragment and Vertex Shaders
-	glDeleteShader(ref_fragmentShader);
-	glDeleteShader(ref_vertexShader);
+	m_shaderProgram.cleanUp();
 
 	// Delete Index and Vertex Buffers
 	glDeleteBuffers(1, &ref_elementBufferObject);

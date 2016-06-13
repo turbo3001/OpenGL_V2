@@ -19,3 +19,13 @@ float UpdateObject::getDeltaTime()
 {
 	return deltaTime;
 }
+
+vector<Event> UpdateObject::getEvents()
+{
+	return m_events;
+}
+
+void UpdateObject::pushEvent(Event * newEvent)
+{
+	m_events.push_back(*newEvent);
+}

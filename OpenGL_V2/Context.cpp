@@ -45,6 +45,18 @@ void Context::update(UpdateObject update)
 			if (m_windowEvent.key.keysym.sym == SDLK_ESCAPE) bool_exit = true;
 		}
 
+		if (m_windowEvent.type == SDL_KEYDOWN)
+		{
+			if (m_windowEvent.key.keysym.sym == SDLK_a)
+			{
+				update.pushEvent(new Event("HandleAKey"));
+			}
+			if (m_windowEvent.key.keysym.sym == SDLK_d)
+			{
+				update.pushEvent(new Event("HandleDKey"));
+			}
+		}
+
 		//TODO: Handle Other Window Events
 
 

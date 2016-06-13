@@ -11,6 +11,15 @@ public:
 	glm::mat4 getViewMatrix();
 	glm::mat4 getProjetcionMatrix();
 
+	glm::vec3 getPosition();
+	glm::vec3 getLookAt();
+	glm::vec3 getUp();
+
+	float getFOV();
+	float getAspectRatio();
+	float getNearPlane();
+	float getFarPlane();
+
 	void setPosition(float x, float y, float z);
 	void setPosition(glm::vec3 position);
 

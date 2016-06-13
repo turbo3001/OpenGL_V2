@@ -120,6 +120,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Context.cpp" />
+    <ClCompile Include="Event.cpp" />
     <ClCompile Include="FragmentShader.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="GLShaderProgram.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Context.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="FragmentShader.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Globals.h" />

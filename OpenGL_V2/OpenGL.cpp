@@ -5,6 +5,8 @@
 const float fadeTime = 2000.0f; // The time in which to change the images (in milliseconds)
 const float rotationPerSecond = 45.0f; // The rotation per Second in degrees
 
+const float cameraSpeed = 10.0f;
+
 OpenGL::OpenGL()
 {
 	m_shaderProgram = GLShaderProgram();
@@ -185,11 +187,34 @@ void OpenGL::update(UpdateObject updateObject)
 	glUniform1f(glGetUniformLocation(m_shaderProgram.getReference(), "time"), updateObject.getTimeSinceStart());
 	glUniform1f(glGetUniformLocation(m_shaderProgram.getReference(), "fadeTime"), fadeTime);
 
-	float newX = sin(updateObject.getTimeSinceStart() * 1.25f) * 2.25f + 0.75f;
-	float newY = sin(updateObject.getTimeSinceStart() * 0.625f) * 2.25f + 0.75f;
-	float newZ = sin(updateObject.getTimeSinceStart() * 0.25f) * 2.25f + 2.25f;
+	glm::vec3 updatedCameraPosition = m_camera.getPosition();
 
-	m_camera.setPosition(newX, newY, newZ);
+	
+	vector<Event> events = updateObject.getEvents();
+
+	for (vector<Event>::iterator it = events.begin(); it != events.end(); ++it)
+	{
+		Event currEvent = *it;
+
+		if (currEvent.getEventType() == "HandleAKey")
+		{
+			updatedCameraPosition.x += updateObject.getDeltaTime() * cameraSpeed;
+		}
+
+		if (currEvent.getEventType() == "HandleDKey")
+		{
+			updatedCameraPosition.x -= updateObject.getDeltaTime() * cameraSpeed;
+		}
+	}
+
+	printf("Camera Position: %f, %f, %f\n", updatedCameraPosition.x, updatedCameraPosition.y, updatedCameraPosition.z);
+
+	m_camera.setPosition(updatedCameraPosition);
+	
+	float newFOV = (sin(updateObject.getTimeSinceStart() * 0.125) + 1.0f) * 180.0f;
+
+	//m_camera.setFOV(newFOV);
+
 	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "view"), 1, GL_FALSE, glm::value_ptr(m_camera.getViewMatrix()));
 	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram.getReference(), "projection"), 1, GL_FALSE, glm::value_ptr(m_camera.getProjetcionMatrix()));
 	
@@ -197,7 +222,7 @@ void OpenGL::update(UpdateObject updateObject)
 
 	//scaleAmount = sin(updateObject.getTimeSinceStart() * 5.0f) * 0.25f + 0.75f;
 	
-	rotation = rotationPerSecond * updateObject.getTimeSinceStart();
+	//rotation = rotationPerSecond * updateObject.getTimeSinceStart();
 
 	while (rotation >= 360.0f)
 	{

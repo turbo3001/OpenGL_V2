@@ -22,6 +22,41 @@ glm::mat4 Camera::getProjetcionMatrix()
 	return glm::perspective(glm::radians(m_fov), m_aspectRatio, m_nearPlane, m_farPlane);;
 }
 
+glm::vec3 Camera::getPosition()
+{
+	return m_position;
+}
+
+glm::vec3 Camera::getLookAt()
+{
+	return m_lookAt;
+}
+
+glm::vec3 Camera::getUp()
+{
+	return m_up;
+}
+
+float Camera::getFOV()
+{
+	return m_fov;
+}
+
+float Camera::getAspectRatio()
+{
+	return m_aspectRatio;
+}
+
+float Camera::getNearPlane()
+{
+	return m_nearPlane;
+}
+
+float Camera::getFarPlane()
+{
+	return m_farPlane;
+}
+
 void Camera::setPosition(float x, float y, float z)
 {
 	glm::vec3 newPosition = glm::vec3(x, y, z);

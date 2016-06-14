@@ -199,11 +199,13 @@ void OpenGL::update(UpdateObject updateObject)
 		if (currEvent.getEventType() == "HandleAKey")
 		{
 			updatedCameraPosition.x += updateObject.getDeltaTime() * cameraSpeed;
+			m_camera.moveLookAt(updateObject.getDeltaTime() * cameraSpeed, 0.0f, 0.0f);
 		}
 
 		if (currEvent.getEventType() == "HandleDKey")
 		{
 			updatedCameraPosition.x -= updateObject.getDeltaTime() * cameraSpeed;
+			m_camera.moveLookAt(-(updateObject.getDeltaTime() * cameraSpeed), 0.0f, 0.0f);
 		}
 	}
 
@@ -222,7 +224,7 @@ void OpenGL::update(UpdateObject updateObject)
 
 	//scaleAmount = sin(updateObject.getTimeSinceStart() * 5.0f) * 0.25f + 0.75f;
 	
-	//rotation = rotationPerSecond * updateObject.getTimeSinceStart();
+	rotation = rotationPerSecond * updateObject.getTimeSinceStart();
 
 	while (rotation >= 360.0f)
 	{

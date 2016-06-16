@@ -25,6 +25,9 @@ void Context::init()
 	// Create the window
 	m_window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
 
+	// Contain mouse in screen
+	//sSDL_SetRelativeMouseMode(SDL_TRUE);
+
 	// Create the context
 	m_context = SDL_GL_CreateContext(m_window);
 
@@ -34,7 +37,7 @@ void Context::init()
 void Context::update(UpdateObject update)
 {
 	// Poll window for Events
-	if (SDL_PollEvent(&m_windowEvent))
+	while (SDL_PollEvent(&m_windowEvent))
 	{
 		bool bool_exit = false;
 
@@ -55,6 +58,23 @@ void Context::update(UpdateObject update)
 			{
 				update.pushEvent(new Event("HandleDKey"));
 			}
+			if (m_windowEvent.key.keysym.sym == SDLK_w)
+			{
+				update.pushEvent(new Event("HandleWKey"));
+			}
+			if (m_windowEvent.key.keysym.sym == SDLK_s)
+			{
+				update.pushEvent(new Event("HandleSKey"));
+			}
+			if (m_windowEvent.key.keysym.sym == SDLK_LSHIFT)
+			{
+				update.pushEvent(new Event("HandleLeftShiftKey"));
+			}
+			if (m_windowEvent.key.keysym.sym == SDLK_LCTRL)
+			{
+				update.pushEvent(new Event("HandleLeftControlKey"));
+			}
+
 		}
 
 		//TODO: Handle Other Window Events

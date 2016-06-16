@@ -9,6 +9,8 @@ const float cameraSpeed = 10.0f;
 
 OpenGL::OpenGL()
 {
+	eventWriteTimer = 0.0f;
+
 	m_shaderProgram = GLShaderProgram();
 	m_camera = Camera();
 }
@@ -30,7 +32,7 @@ void OpenGL::init()
 
 	// Set up camera
 	// View Matrix Variables
-	m_camera.setPosition(2.5f, 2.5f, 2.0f);
+	m_camera.setPosition(0.0f, 5.0f, 2.0f);
 	m_camera.setLookAt(0.0f, 0.0f, 0.0f);
 	m_camera.setUp(0.0f, 0.0f, 1.0f);
 
@@ -190,11 +192,26 @@ void OpenGL::update(UpdateObject updateObject)
 	glm::vec3 updatedCameraPosition = m_camera.getPosition();
 
 	
-	vector<Event> events = updateObject.getEvents();
 
-	for (vector<Event>::iterator it = events.begin(); it != events.end(); ++it)
+	bool writeOutEvent = false;
+	
+	if (eventWriteTimer >= 1.0f)
 	{
-		Event currEvent = *it;
+		writeOutEvent = true;
+		eventWriteTimer = 0.0f;
+	}
+	else {
+		eventWriteTimer += updateObject.getDeltaTime();
+	}
+
+
+	for (auto & currEvent : updateObject.getEvents())
+	{
+
+		if (writeOutEvent)
+		{
+			printf("Event: %s\n", currEvent.getEventType().c_str());
+		}
 
 		if (currEvent.getEventType() == "HandleAKey")
 		{
@@ -207,9 +224,34 @@ void OpenGL::update(UpdateObject updateObject)
 			updatedCameraPosition.x -= updateObject.getDeltaTime() * cameraSpeed;
 			m_camera.moveLookAt(-(updateObject.getDeltaTime() * cameraSpeed), 0.0f, 0.0f);
 		}
+
+		if (currEvent.getEventType() == "HandleWKey")
+		{
+			updatedCameraPosition.y -= updateObject.getDeltaTime() * cameraSpeed;
+			m_camera.moveLookAt(0.0f, -(updateObject.getDeltaTime() * cameraSpeed), 0.0f);
+		}
+
+		if (currEvent.getEventType() == "HandleSKey")
+		{
+			updatedCameraPosition.y = updateObject.getDeltaTime() * cameraSpeed;
+			m_camera.moveLookAt(0.0f, updateObject.getDeltaTime() * cameraSpeed, 0.0f);
+		}
+
+		if (currEvent.getEventType() == "HandleLeftShiftKey")
+		{
+			updatedCameraPosition.z += updateObject.getDeltaTime() * cameraSpeed;
+			//m_camera.moveLookAt(0.0f, 0.0f, updateObject.getDeltaTime() * cameraSpeed);
+		}
+
+		if (currEvent.getEventType() == "HandleLeftControlKey")
+		{
+			updatedCameraPosition.z -= updateObject.getDeltaTime() * cameraSpeed;
+			if (updatedCameraPosition.z < 0.0f) updatedCameraPosition.z = 0.0f;
+			//m_camera.moveLookAt(0.0f, 0.0f, -(updateObject.getDeltaTime() * cameraSpeed));
+		}
 	}
 
-	printf("Camera Position: %f, %f, %f\n", updatedCameraPosition.x, updatedCameraPosition.y, updatedCameraPosition.z);
+	//printf("Camera Position: %f, %f, %f\n", updatedCameraPosition.x, updatedCameraPosition.y, updatedCameraPosition.z);
 
 	m_camera.setPosition(updatedCameraPosition);
 	

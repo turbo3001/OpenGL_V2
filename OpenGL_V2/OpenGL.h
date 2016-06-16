@@ -1,5 +1,6 @@
 #pragma once
 //External Includes
+#include <math.h>
 
 // Internal Includes
 #include "Constants.h"
@@ -39,4 +40,6 @@ private:
 
 	float rotation;
 	float scaleAmount;
+
+	float eventWriteTimer;
 };

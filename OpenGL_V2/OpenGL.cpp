@@ -7,7 +7,7 @@ const float rotationPerSecond = 45.0f; // The rotation per Second in degrees
 
 const float cameraSpeed = 10.0f;
 
-OpenGL::OpenGL()
+OpenGLScene::OpenGLScene()
 {
 	eventWriteTimer = 0.0f;
 
@@ -15,11 +15,11 @@ OpenGL::OpenGL()
 	m_camera = Camera();
 }
 
-OpenGL::~OpenGL()
+OpenGLScene::~OpenGLScene()
 {
 }
 
-void OpenGL::init()
+void OpenGLScene::init()
 {
 	// Initialise GLEW (NOTE: This has to be done after Window and Context created!) 
 	glewExperimental = GL_TRUE;
@@ -183,13 +183,14 @@ void OpenGL::init()
 	glEnable(GL_DEPTH_TEST);
 }
 
-void OpenGL::update(UpdateObject updateObject)
+void OpenGLScene::update(UpdateObject updateObject)
 {
 
 	glUniform1f(glGetUniformLocation(m_shaderProgram.getReference(), "time"), updateObject.getTimeSinceStart());
 	glUniform1f(glGetUniformLocation(m_shaderProgram.getReference(), "fadeTime"), fadeTime);
 
 	glm::vec3 updatedCameraPosition = m_camera.getPosition();
+	glm::vec3 updatedCameraUp = m_camera.getUp();
 
 	
 
@@ -213,6 +214,16 @@ void OpenGL::update(UpdateObject updateObject)
 			printf("Event: %s\n", currEvent.getEventType().c_str());
 		}
 
+		if (currEvent.getEventType() == "HandleQKey")
+		{
+			rotateVector(&updatedCameraUp, (updateObject.getDeltaTime() * cameraSpeed) * 9000.0f, Y_AXIS);
+		}
+
+		if (currEvent.getEventType() == "HandleQKey")
+		{
+			rotateVector(&updatedCameraUp, -((updateObject.getDeltaTime() * cameraSpeed) * 9000.0f), Y_AXIS);
+		}
+
 		if (currEvent.getEventType() == "HandleAKey")
 		{
 			updatedCameraPosition.x += updateObject.getDeltaTime() * cameraSpeed;
@@ -233,26 +244,29 @@ void OpenGL::update(UpdateObject updateObject)
 
 		if (currEvent.getEventType() == "HandleSKey")
 		{
-			updatedCameraPosition.y = updateObject.getDeltaTime() * cameraSpeed;
-			m_camera.moveLookAt(0.0f, updateObject.getDeltaTime() * cameraSpeed, 0.0f);
+			updatedCameraPosition.y += updateObject.getDeltaTime() * cameraSpeed;
+			m_camera.moveLookAt(0.0f, (updateObject.getDeltaTime() * cameraSpeed), 0.0f);
 		}
 
 		if (currEvent.getEventType() == "HandleLeftShiftKey")
 		{
 			updatedCameraPosition.z += updateObject.getDeltaTime() * cameraSpeed;
-			//m_camera.moveLookAt(0.0f, 0.0f, updateObject.getDeltaTime() * cameraSpeed);
+			m_camera.moveLookAt(0.0f, 0.0f, updateObject.getDeltaTime() * cameraSpeed);
 		}
 
 		if (currEvent.getEventType() == "HandleLeftControlKey")
 		{
 			updatedCameraPosition.z -= updateObject.getDeltaTime() * cameraSpeed;
 			if (updatedCameraPosition.z < 0.0f) updatedCameraPosition.z = 0.0f;
-			//m_camera.moveLookAt(0.0f, 0.0f, -(updateObject.getDeltaTime() * cameraSpeed));
+			m_camera.moveLookAt(0.0f, 0.0f, -(updateObject.getDeltaTime() * cameraSpeed));
 		}
 	}
 
-	//printf("Camera Position: %f, %f, %f\n", updatedCameraPosition.x, updatedCameraPosition.y, updatedCameraPosition.z);
+	printf("Camera Position: %f, %f, %f\n", updatedCameraPosition.x, updatedCameraPosition.y, updatedCameraPosition.z);
+	printf("Camera Look At: %f, %f, %f\n", m_camera.getLookAt().x, m_camera.getLookAt().y, m_camera.getLookAt().z);
+	printf("Camera Up: %f, %f, %f\n", updatedCameraUp.x, updatedCameraUp.y, updatedCameraUp.z);
 
+	m_camera.setUp(updatedCameraUp);
 	m_camera.setPosition(updatedCameraPosition);
 	
 	float newFOV = (sin(updateObject.getTimeSinceStart() * 0.125) + 1.0f) * 180.0f;
@@ -274,7 +288,7 @@ void OpenGL::update(UpdateObject updateObject)
 	}
 }
 
-void OpenGL::draw()
+void OpenGLScene::draw()
 {
 	glClearColor(0.6f, 0.003f, 0.922f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -324,7 +338,7 @@ void OpenGL::draw()
 	glDisable(GL_STENCIL_TEST);
 }
 
-void OpenGL::cleanUp()
+void OpenGLScene::cleanUp()
 {
 
 	// Delete Texture References

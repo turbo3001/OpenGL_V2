@@ -12,12 +12,12 @@
 #include "ShaderReader.hpp"
 #include "UpdateObject.h"
 
-class OpenGL
+class OpenGLScene
 {
 
 public:
-	OpenGL();
-	~OpenGL();
+	OpenGLScene();
+	~OpenGLScene();
 
 	void init();
 	void update(UpdateObject updateObject);

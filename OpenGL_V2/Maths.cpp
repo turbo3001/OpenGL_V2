@@ -14,18 +14,18 @@ void rotateVector(vec3 * vector, float rotateBy, int axis)
 
 	switch (axis)
 	{
-	case X_AXIS:
-		axisVec = vec3(1.0f, 0.0f, 0.0f);
-		break;
-	case Y_AXIS:
-		axisVec = vec3(0.0f, 1.0f, 0.0f);
-		break;
-	case Z_AXIS:
-		axisVec = vec3(0.0f, 0.0f, 1.0f);
-		break;
-	default:
-		return;
-		break;
+		case X_AXIS:
+			axisVec = vec3(1.0f, 0.0f, 0.0f);
+			break;
+		case Y_AXIS:
+			axisVec = vec3(0.0f, 1.0f, 0.0f);
+			break;
+		case Z_AXIS:
+			axisVec = vec3(0.0f, 0.0f, 1.0f);
+			break;
+		default:
+			return;
+			break;
 	}
 
 	mat4 rotationMatrix = glm::rotate(rotateBy, axisVec);

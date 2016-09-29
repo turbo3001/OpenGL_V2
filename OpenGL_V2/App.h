@@ -15,6 +15,7 @@ public:
 
 	void start();
 	void init();
+	void handleInput(UpdateObject forUpdate);
 	void update(UpdateObject update);
 	void draw();
 	void cleanUp();

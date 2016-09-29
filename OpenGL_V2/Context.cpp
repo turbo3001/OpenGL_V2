@@ -3,12 +3,12 @@
 
 Context::Context()
 {
-	m_openGL = OpenGL();
+	m_openGL = OpenGLScene();
 }
 
 Context::~Context()
 {
-	m_openGL.~OpenGL();
+	m_openGL.~OpenGLScene();
 }
 
 void Context::init()
@@ -23,7 +23,7 @@ void Context::init()
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 	// Create the window
-	m_window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
+	m_window = SDL_CreateWindow("OpenGLScene", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
 
 	// Contain mouse in screen
 	//sSDL_SetRelativeMouseMode(SDL_TRUE);
@@ -34,7 +34,7 @@ void Context::init()
 	m_openGL.init();
 }
 
-void Context::update(UpdateObject update)
+void Context::handleInput(UpdateObject forUpdate)
 {
 	// Poll window for Events
 	while (SDL_PollEvent(&m_windowEvent))
@@ -50,31 +50,44 @@ void Context::update(UpdateObject update)
 
 		if (m_windowEvent.type == SDL_KEYDOWN)
 		{
+			if (m_windowEvent.key.keysym.sym == SDLK_q)
+			{
+				forUpdate.pushEvent(new Event("HandleQKey"));
+			}
+			if (m_windowEvent.key.keysym.sym == SDLK_e)
+			{
+				forUpdate.pushEvent(new Event("HandleEKey"));
+			}
 			if (m_windowEvent.key.keysym.sym == SDLK_a)
 			{
-				update.pushEvent(new Event("HandleAKey"));
+				forUpdate.pushEvent(new Event("HandleAKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_d)
 			{
-				update.pushEvent(new Event("HandleDKey"));
+				forUpdate.pushEvent(new Event("HandleDKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_w)
 			{
-				update.pushEvent(new Event("HandleWKey"));
+				forUpdate.pushEvent(new Event("HandleWKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_s)
 			{
-				update.pushEvent(new Event("HandleSKey"));
+				forUpdate.pushEvent(new Event("HandleSKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_LSHIFT)
 			{
-				update.pushEvent(new Event("HandleLeftShiftKey"));
+				forUpdate.pushEvent(new Event("HandleLeftShiftKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_LCTRL)
 			{
-				update.pushEvent(new Event("HandleLeftControlKey"));
+				forUpdate.pushEvent(new Event("HandleLeftControlKey"));
 			}
 
+		}
+
+		if (m_windowEvent.type == SDL_MOUSEMOTION)
+		{
+			forUpdate.pushEvent(new Event("HandleMouseMove", &(m_windowEvent.motion)));
 		}
 
 		//TODO: Handle Other Window Events
@@ -84,7 +97,10 @@ void Context::update(UpdateObject update)
 			ExitCode = NORMAL_EXIT;
 		}
 	}
+}
 
+void Context::update(UpdateObject update)
+{
 	m_openGL.update(update);
 
 	SDL_GL_SwapWindow(m_window);

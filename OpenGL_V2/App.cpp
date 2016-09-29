@@ -21,6 +21,10 @@ void App::init()
 	m_SDLContext.init();
 }
 
+void App::handleInput(UpdateObject forUpdate)
+{
+}
+
 void App::update(UpdateObject update)
 {
 	m_SDLContext.update(update);

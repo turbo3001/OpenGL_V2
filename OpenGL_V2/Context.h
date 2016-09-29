@@ -15,6 +15,7 @@ public:
 	~Context();
 
 	void init();
+	void handleInput(UpdateObject forUpdate);
 	void update(UpdateObject update);
 	void draw();
 	void cleanUp();
@@ -24,6 +25,6 @@ private:
 	SDL_GLContext m_context; // SDL Context
 	SDL_Event m_windowEvent; // Create SDL_Event object, this will listen for window events later.
 	
-	OpenGL m_openGL; // openGL Object
+	OpenGLScene m_openGL; // openGL Object
 
 };

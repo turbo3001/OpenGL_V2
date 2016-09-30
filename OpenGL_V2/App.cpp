@@ -23,6 +23,7 @@ void App::init()
 
 void App::handleInput(UpdateObject forUpdate)
 {
+	m_SDLContext.handleInput(forUpdate);
 }
 
 void App::update(UpdateObject update)
@@ -59,6 +60,7 @@ void App::startLoop()
 		previousTime = time_since_start;
 
 		UpdateObject updateObject = UpdateObject(time_since_start, deltaTime);
+		handleInput(updateObject);
 		update(updateObject);
 
 		draw();

@@ -85,10 +85,25 @@ void Context::handleInput(UpdateObject forUpdate)
 
 		}
 
+		SDL_Surface* screen = new SDL_Surface();
 		if (m_windowEvent.type == SDL_MOUSEMOTION)
 		{
-			forUpdate.pushEvent(new Event("HandleMouseMove", &(m_windowEvent.motion)));
+			SDL_PixelFormat* fmt = screen->format;
+			/* If the mouse is moving to the left */
+			if (m_windowEvent.motion.xrel < 0)
+				SDL_FillRect(screen, NULL, SDL_MapRGB(fmt, 255, 0, 0));
+			/* If the mouse is moving to the right */
+			else if (m_windowEvent.motion.xrel > 0)
+				SDL_FillRect(screen, NULL, SDL_MapRGB(fmt, 0, 255, 0));
+			/* If the m_windowEvent is moving up */
+			else if (m_windowEvent.motion.yrel < 0)
+				SDL_FillRect(screen, NULL, SDL_MapRGB(fmt, 0, 0, 255));
+			/* If the mouse is moving down */
+			else if (m_windowEvent.motion.yrel > 0)
+				SDL_FillRect(screen, NULL, SDL_MapRGB(fmt, 0, 255, 255));
 		}
+
+		//SDL_Flip(screen);
 
 		//TODO: Handle Other Window Events
 

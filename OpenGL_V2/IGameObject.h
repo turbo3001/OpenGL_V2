@@ -15,6 +15,7 @@ public:
 	virtual void handleInput(SDL_Event inputEvent) = 0;
 	virtual void update(UpdateObject updateObject) = 0;
 	virtual void draw(GLShaderProgram graphics) = 0;
+	virtual void cleanUp() = 0;
 
 private:
 

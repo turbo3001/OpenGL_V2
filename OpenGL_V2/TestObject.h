@@ -16,6 +16,8 @@ public:
 
 	virtual void draw(GLShaderProgram graphics) override;
 
+	virtual void cleanUp() override;
+
 private:
 	// Create Verticies
 	float vertices[336] = {

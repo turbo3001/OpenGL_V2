@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "ShaderReader.hpp"
 #include "UpdateObject.h"
+#include "TestObject.h"
 
 class OpenGLScene
 {
@@ -29,17 +30,10 @@ private:
 	/**OPENGL VARIABLES**/
 	GLShaderProgram m_shaderProgram;
 
-	GLuint ref_vertexArrayObject;
-	GLuint ref_vertexBufferObject;
-	GLuint ref_elementBufferObject;
-
-	GLuint ref_textures[2];
-
 	/**VARIABLES**/
 	Camera m_camera;
 
-	float rotation;
-	float scaleAmount;
+	TestObject testObject;
 
 	float eventWriteTimer;
 };

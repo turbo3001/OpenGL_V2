@@ -34,7 +34,7 @@ void Context::init()
 	m_openGL.init();
 }
 
-void Context::handleInput(UpdateObject forUpdate)
+void Context::handleInput(UpdateObject* forUpdate)
 {
 	// Poll window for Events
 	while (SDL_PollEvent(&m_windowEvent))
@@ -52,58 +52,38 @@ void Context::handleInput(UpdateObject forUpdate)
 		{
 			if (m_windowEvent.key.keysym.sym == SDLK_q)
 			{
-				forUpdate.pushEvent(new Event("HandleQKey"));
+				forUpdate->pushEvent(new Event("HandleQKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_e)
 			{
-				forUpdate.pushEvent(new Event("HandleEKey"));
+				forUpdate->pushEvent(new Event("HandleEKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_a)
 			{
-				forUpdate.pushEvent(new Event("HandleAKey"));
+				forUpdate->pushEvent(new Event("HandleAKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_d)
 			{
-				forUpdate.pushEvent(new Event("HandleDKey"));
+				forUpdate->pushEvent(new Event("HandleDKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_w)
 			{
-				forUpdate.pushEvent(new Event("HandleWKey"));
+				forUpdate->pushEvent(new Event("HandleWKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_s)
 			{
-				forUpdate.pushEvent(new Event("HandleSKey"));
+				forUpdate->pushEvent(new Event("HandleSKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_LSHIFT)
 			{
-				forUpdate.pushEvent(new Event("HandleLeftShiftKey"));
+				forUpdate->pushEvent(new Event("HandleLeftShiftKey"));
 			}
 			if (m_windowEvent.key.keysym.sym == SDLK_LCTRL)
 			{
-				forUpdate.pushEvent(new Event("HandleLeftControlKey"));
+				forUpdate->pushEvent(new Event("HandleLeftControlKey"));
 			}
 
 		}
-
-		SDL_Surface* screen = new SDL_Surface();
-		if (m_windowEvent.type == SDL_MOUSEMOTION)
-		{
-			SDL_PixelFormat* fmt = screen->format;
-			/* If the mouse is moving to the left */
-			if (m_windowEvent.motion.xrel < 0)
-				SDL_FillRect(screen, NULL, SDL_MapRGB(fmt, 255, 0, 0));
-			/* If the mouse is moving to the right */
-			else if (m_windowEvent.motion.xrel > 0)
-				SDL_FillRect(screen, NULL, SDL_MapRGB(fmt, 0, 255, 0));
-			/* If the m_windowEvent is moving up */
-			else if (m_windowEvent.motion.yrel < 0)
-				SDL_FillRect(screen, NULL, SDL_MapRGB(fmt, 0, 0, 255));
-			/* If the mouse is moving down */
-			else if (m_windowEvent.motion.yrel > 0)
-				SDL_FillRect(screen, NULL, SDL_MapRGB(fmt, 0, 255, 255));
-		}
-
-		//SDL_Flip(screen);
 
 		//TODO: Handle Other Window Events
 

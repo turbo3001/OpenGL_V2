@@ -151,3 +151,16 @@ void TestObject::draw(GLShaderProgram graphics)
 	glDisable(GL_STENCIL_TEST);
 }
 
+void TestObject::cleanUp()
+{
+	// Delete Texture References
+	glDeleteTextures(2, ref_textures);
+
+	// Delete Index and Vertex Buffers
+	glDeleteBuffers(1, &ref_elementBufferObject);
+	glDeleteBuffers(1, &ref_vertexBufferObject);
+
+	// Delete Vertex Array
+	glDeleteVertexArrays(1, &ref_vertexArrayObject);
+}
+
